@@ -1,26 +1,40 @@
-import {
-  requireNativeComponent,
-  UIManager,
-  Platform,
-  ViewStyle,
-} from 'react-native';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { requireNativeComponent } from 'react-native';
 
-const LINKING_ERROR =
-  `The package 'react-native-turbo' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo managed workflow\n';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 
-type TurboProps = {
-  color: string;
-  style: ViewStyle;
-};
+import type { NativeTurboProps, TurboCommands, TurboProps } from './types';
 
-const ComponentName = 'TurboView';
+export const Commands = codegenNativeCommands({
+  supportedCommands: ['viewDidAppear'],
+});
 
-export const TurboView =
-  UIManager.getViewManagerConfig(ComponentName) != null
-    ? requireNativeComponent<TurboProps>(ComponentName)
-    : () => {
-        throw new Error(LINKING_ERROR);
-      };
+const NativeTurboView = requireNativeComponent<NativeTurboProps>('TurboView');
+
+export const TurboView = forwardRef(({ url, sessionKey, navigation, onProposeVisit, style }: TurboProps, ref) => {
+  const turboViewRef = useRef<TurboCommands | null>(null);
+
+  useEffect(() => {
+    //TODO turboViewRef.current.viewWillAppear();
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      //TODO turboViewRef.current.viewDidAppear();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useImperativeHandle(ref, () => ({
+    viewDidAppear: () => Commands.viewDidAppear()
+  }), [turboViewRef]);
+
+  return (
+    <NativeTurboView
+      ref={turboViewRef}
+      style={style}
+      url={url}
+      sessionKey={sessionKey}
+      onProposeVisit={onProposeVisit}
+    />
+  );
+})
