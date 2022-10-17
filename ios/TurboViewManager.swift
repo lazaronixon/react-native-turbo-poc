@@ -3,7 +3,8 @@ import Turbo
 @objc(TurboViewManager)
 class TurboViewManager: RCTViewManager {
     override func view() -> TurboView {
-        TurboView()
+        TurboLog.debugLoggingEnabled = true;
+        return TurboView()
     }
     
     @objc override static func requiresMainQueueSetup() -> Bool {
@@ -28,7 +29,7 @@ class TurboView: UIView, SessionDelegate {
     @objc var url: URL!
     @objc var onProposeVisit: RCTBubblingEventBlock!
     
-    private var viewController: VisitableViewController?
+    private var viewController: RNVisitableViewController?
     
     private lazy var session: Session = {
         let session = SessionManager.shared.getOrCreateSession(sessionKey)
@@ -39,6 +40,11 @@ class TurboView: UIView, SessionDelegate {
     override func didMoveToWindow() {
         if (window != nil && viewController == nil) {
             visit(url: url)
+        }
+        
+        if (window != nil && viewController != nil) {
+            viewController!.visitableViewWillAppear()
+            viewController!.visitableViewDidAppear()
         }
     }
     
@@ -59,14 +65,14 @@ class TurboView: UIView, SessionDelegate {
     }
     
     private func visit(url: URL) {
-        let viewController = VisitableViewController(url: url)
+        let viewController = RNVisitableViewController(url: url)
         installViewController(viewController)
         session.visit(viewController)
         
         self.viewController = viewController
     }
     
-    private func installViewController(_ viewController: VisitableViewController) {
+    private func installViewController(_ viewController: RNVisitableViewController) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         
         self.viewController?.view?.removeFromSuperview()
@@ -78,6 +84,19 @@ class TurboView: UIView, SessionDelegate {
             viewController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
             viewController.view.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
+    }
+}
+
+class RNVisitableViewController: VisitableViewController {
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    
+    func visitableViewWillAppear() {
+        visitableDelegate?.visitableViewWillAppear(self)
+    }
+    
+    func visitableViewDidAppear() {
+        visitableDelegate?.visitableViewDidAppear(self)
     }
 }
 
