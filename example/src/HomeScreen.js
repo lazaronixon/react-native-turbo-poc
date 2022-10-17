@@ -7,14 +7,12 @@ export function HomeScreen({ route, navigation }) {
   const turboViewRef = useRef(null);
 
   useEffect(() => {
-    turboViewRef.current.viewWillAppear();
-
     const unsubscribe = navigation.addListener('focus', () => {
-      turboViewRef.current.viewDidAppear();
+      turboViewRef.current.reload();
     });
 
     return unsubscribe;
-  }, [navigation, turboViewRef]);
+  }, [navigation]);
 
   return (
     <TurboView

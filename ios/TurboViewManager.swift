@@ -10,15 +10,9 @@ class TurboViewManager: RCTViewManager {
         return false
     }
 
-    @objc func viewWillAppear(_ reactTag: NSNumber) {
+    @objc func reload(_ reactTag: NSNumber) {
         getView(reactTag: reactTag) { view in
-            view.visitableViewWillAppear()
-        }
-    }
-    
-    @objc func viewDidAppear(_ reactTag: NSNumber) {
-        getView(reactTag: reactTag) { view in
-            view.visitableViewDidAppear()
+            view.reload()
         }
     }
     
@@ -60,12 +54,8 @@ class TurboView: UIView, SessionDelegate {
         session.reload()
     }
     
-    func visitableViewWillAppear() {
-        viewController?.visitableDelegate?.visitableViewWillAppear(viewController!)
-    }
-    
-    func visitableViewDidAppear() {
-        viewController?.visitableDelegate?.visitableViewDidAppear(viewController!)
+    func reload() {
+        session.reload()
     }
     
     private func visit(url: URL) {
@@ -103,9 +93,4 @@ class SessionManager {
             sessions[key] = Session(); return sessions[key]!
         }
     }
-}
-
-class RNVisitableViewController: VisitableViewController {
-    open override func viewWillAppear(_ animated: Bool) {}
-    open override func viewDidAppear(_ animated: Bool) {}
 }

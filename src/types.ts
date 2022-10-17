@@ -1,4 +1,4 @@
-import type { ViewProps, NativeSyntheticEvent } from "react-native";
+import type { ViewProps, NativeSyntheticEvent } from 'react-native';
 
 export interface NativeTurboProps extends ViewProps {
   url: string;
@@ -6,11 +6,10 @@ export interface NativeTurboProps extends ViewProps {
   onProposeVisit: (proposal: NativeSyntheticEvent<VisitProposal>) => void;
 }
 
-export interface TurboProps extends NativeTurboProps {
-}
+export interface TurboProps extends NativeTurboProps {}
 
 export interface TurboRef {
-  viewDidAppear: () => void;
+  reload: () => void;
 }
 
 export interface VisitProposal {
