@@ -38,7 +38,7 @@ class TurboView: UIView, SessionDelegate {
         }
         
         if (window != nil && viewController == nil) {
-            visit(url: url)
+            initialVisit(url: url)
         }
         
         if (window != nil && viewController != nil) {
@@ -64,10 +64,13 @@ class TurboView: UIView, SessionDelegate {
     }
     
     private func makeSession() -> Session {
-        SessionManager.shared.getOrCreateSession(sessionKey)
+        let configuration = WKWebViewConfiguration()
+        configuration.applicationNameForUserAgent = "Turbo Native iOS"
+        
+        return SessionManager.shared.getOrCreateSession(sessionKey, configuration)
     }
     
-    private func visit(url: URL) {
+    private func initialVisit(url: URL) {
         let viewController = RNVisitableViewController(url: url)
         installViewController(viewController)
         session.visit(viewController)
@@ -76,10 +79,6 @@ class TurboView: UIView, SessionDelegate {
     }
     
     private func installViewController(_ viewController: RNVisitableViewController) {
-        viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.viewController?.view?.removeFromSuperview()
-        
         addSubview(viewController.view)
         NSLayoutConstraint.activate([
             viewController.view.topAnchor.constraint(equalTo: topAnchor),
@@ -91,6 +90,10 @@ class TurboView: UIView, SessionDelegate {
 }
 
 class RNVisitableViewController: VisitableViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad(); view.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         // ignore it
     }
@@ -112,11 +115,11 @@ class SessionManager {
     
     private var sessions: [String: Session] = [:]
     
-    func getOrCreateSession(_ key: String) -> Session {
+    func getOrCreateSession(_ key: String,_ configuration: WKWebViewConfiguration) -> Session {
         if let session = sessions[key] {
             return session
         } else {
-            sessions[key] = Session(); return sessions[key]!
+            sessions[key] = Session(webViewConfiguration: configuration); return sessions[key]!
         }
     }
 }
