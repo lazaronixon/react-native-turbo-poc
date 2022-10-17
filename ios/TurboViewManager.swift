@@ -9,13 +9,23 @@ class TurboViewManager: RCTViewManager {
     @objc override static func requiresMainQueueSetup() -> Bool {
         return false
     }
-    
-    @objc func viewDidAppear() {
-        //TODO viewController.viewDidAppear(false)
-    }
 
-    @objc func viewWillAppear() {
-        //TODO viewController.viewWillAppear(false)
+    @objc func viewWillAppear(_ reactTag: NSNumber) {
+        getView(reactTag: reactTag) { view in
+            view.visitableViewWillAppear()
+        }
+    }
+    
+    @objc func viewDidAppear(_ reactTag: NSNumber) {
+        getView(reactTag: reactTag) { view in
+            view.visitableViewDidAppear()
+        }
+    }
+    
+    func getView(reactTag: NSNumber, callback: @escaping (TurboView) -> Void) {
+      bridge.uiManager.addUIBlock { _, viewRegistry in
+        callback(viewRegistry![reactTag] as! TurboView)
+      }
     }
 }
 
@@ -48,6 +58,14 @@ class TurboView: UIView, SessionDelegate {
     
     func sessionWebViewProcessDidTerminate(_ session: Session) {
         session.reload()
+    }
+    
+    func visitableViewWillAppear() {
+        viewController?.visitableDelegate?.visitableViewWillAppear(viewController!)
+    }
+    
+    func visitableViewDidAppear() {
+        viewController?.visitableDelegate?.visitableViewDidAppear(viewController!)
     }
     
     private func visit(url: URL) {
@@ -85,4 +103,9 @@ class SessionManager {
             sessions[key] = Session(); return sessions[key]!
         }
     }
+}
+
+class RNVisitableViewController: VisitableViewController {
+    open override func viewWillAppear(_ animated: Bool) {}
+    open override func viewDidAppear(_ animated: Bool) {}
 }

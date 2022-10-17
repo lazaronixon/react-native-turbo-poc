@@ -50,7 +50,7 @@
 
 "@babel/eslint-parser@^7.18.2":
   version "7.19.1"
-  resolved "https://registry.npmjs.org/@babel/eslint-parser/-/eslint-parser-7.19.1.tgz"
+  resolved "https://registry.yarnpkg.com/@babel/eslint-parser/-/eslint-parser-7.19.1.tgz#4f68f6b0825489e00a24b41b6a1ae35414ecd2f4"
   integrity sha512-AqNf2QWt1rtu2/1rLswy6CDP7H9Oh3mMhk177Y67Rg8d7RD9WfOLLv8CGn6tisFvS2htm86yIe1yLF6I1UDaGQ==
   dependencies:
     "@nicolo-ribaudo/eslint-scope-5-internals" "5.1.1-v1"
@@ -3163,7 +3163,7 @@ commander@~2.13.0:
 
 commitlint@^17.0.2:
   version "17.1.2"
-  resolved "https://registry.npmjs.org/commitlint/-/commitlint-17.1.2.tgz"
+  resolved "https://registry.yarnpkg.com/commitlint/-/commitlint-17.1.2.tgz#a7ef0e7291fee128248b3a4bf2782886b8589099"
   integrity sha512-ykPXC3TUfYlL8tqz/VOeaJpTPNrcdKrR4Y7ShxjF6l8SlBN/+4YhBJpomG2dx8Ac43FM9OE5rdn1+h7NxsIcAQ==
   dependencies:
     "@commitlint/cli" "^17.1.2"
@@ -4029,7 +4029,7 @@ eslint-visitor-keys@^3.3.0:
 
 eslint@^8.4.1:
   version "8.25.0"
-  resolved "https://registry.npmjs.org/eslint/-/eslint-8.25.0.tgz"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.25.0.tgz#00eb962f50962165d0c4ee3327708315eaa8058b"
   integrity sha512-DVlJOZ4Pn50zcKW5bYH7GQK/9MsoQG2d5eDH0ebEkE8PbgzTTmtt/VTH9GGJ4BfeZCpBLqFfvsjX35UacUL83A==
   dependencies:
     "@eslint/eslintrc" "^1.3.3"

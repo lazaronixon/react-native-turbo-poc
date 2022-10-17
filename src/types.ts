@@ -1,4 +1,4 @@
-import type { HostComponent, NativeSyntheticEvent, ViewProps } from 'react-native';
+import type { ViewProps, NativeSyntheticEvent } from "react-native";
 
 export interface NativeTurboProps extends ViewProps {
   url: string;
@@ -6,15 +6,12 @@ export interface NativeTurboProps extends ViewProps {
   onProposeVisit: (proposal: NativeSyntheticEvent<VisitProposal>) => void;
 }
 
-export interface TurboProps extends NativeTurboProps {  
-  navigation: any;  
+export interface TurboProps extends NativeTurboProps {
 }
 
-export interface TurboCommands {
+export interface TurboRef {
   viewDidAppear: () => void;
 }
-
-export type NativeTurboViewType = HostComponent<NativeTurboProps> & TurboCommands;
 
 export interface VisitProposal {
   url: string;

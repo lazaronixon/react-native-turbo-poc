@@ -1,31 +1,22 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { requireNativeComponent } from 'react-native';
 
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 
-import type { NativeTurboProps, TurboCommands, TurboProps } from './types';
-
-export const Commands = codegenNativeCommands({
-  supportedCommands: ['viewDidAppear'],
-});
+import type { NativeTurboProps, TurboProps } from './types';
 
 const NativeTurboView = requireNativeComponent<NativeTurboProps>('TurboView');
 
-export const TurboView = forwardRef(({ url, sessionKey, navigation, onProposeVisit, style }: TurboProps, ref) => {
-  const turboViewRef = useRef<TurboCommands | null>(null);
+export const Commands = codegenNativeCommands({
+  supportedCommands: ['viewWillAppear', 'viewDidAppear'],
+});
 
-  useEffect(() => {
-    //TODO turboViewRef.current.viewWillAppear();
-
-    const unsubscribe = navigation.addListener('focus', () => {
-      //TODO turboViewRef.current.viewDidAppear();
-    });
-
-    return unsubscribe;
-  }, [navigation]);
+export const TurboView = forwardRef<{}, TurboProps>(({ url, sessionKey, onProposeVisit, style }, ref) => {
+  const turboViewRef = useRef(null);
 
   useImperativeHandle(ref, () => ({
-    viewDidAppear: () => Commands.viewDidAppear()
+    viewWillAppear: () => Commands.viewWillAppear(turboViewRef.current),
+    viewDidAppear: () => Commands.viewDidAppear(turboViewRef.current)
   }), [turboViewRef]);
 
   return (
