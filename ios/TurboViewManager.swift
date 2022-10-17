@@ -3,7 +3,6 @@ import Turbo
 @objc(TurboViewManager)
 class TurboViewManager: RCTViewManager {
     override func view() -> TurboView {
-        TurboLog.debugLoggingEnabled = true;
         return TurboView()
     }
     
@@ -17,7 +16,7 @@ class TurboViewManager: RCTViewManager {
         }
     }
     
-    func getView(reactTag: NSNumber, callback: @escaping (TurboView) -> Void) {
+    private func getView(reactTag: NSNumber, callback: @escaping (TurboView) -> Void) {
       bridge.uiManager.addUIBlock { _, viewRegistry in
         callback(viewRegistry![reactTag] as! TurboView)
       }
@@ -29,15 +28,15 @@ class TurboView: UIView, SessionDelegate {
     @objc var url: URL!
     @objc var onProposeVisit: RCTBubblingEventBlock!
     
+    private lazy var session = makeSession()
+    
     private var viewController: RNVisitableViewController?
     
-    private lazy var session: Session = {
-        let session = SessionManager.shared.getOrCreateSession(sessionKey)
-        session.delegate = self
-        return session
-    }()
-    
     override func didMoveToWindow() {
+        if (window != nil) {
+            session.delegate = self
+        }
+        
         if (window != nil && viewController == nil) {
             visit(url: url)
         }
@@ -64,6 +63,10 @@ class TurboView: UIView, SessionDelegate {
         session.reload()
     }
     
+    private func makeSession() -> Session {
+        SessionManager.shared.getOrCreateSession(sessionKey)
+    }
+    
     private func visit(url: URL) {
         let viewController = RNVisitableViewController(url: url)
         installViewController(viewController)
@@ -88,8 +91,12 @@ class TurboView: UIView, SessionDelegate {
 }
 
 class RNVisitableViewController: VisitableViewController {
-    override func viewWillAppear(_ animated: Bool) {}
-    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillAppear(_ animated: Bool) {
+        // ignore it
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        // ignore it
+    }
     
     func visitableViewWillAppear() {
         visitableDelegate?.visitableViewWillAppear(self)
@@ -103,11 +110,11 @@ class RNVisitableViewController: VisitableViewController {
 class SessionManager {
     static let shared = SessionManager();
     
-    private lazy var sessions: [String: Session] = [:]
+    private var sessions: [String: Session] = [:]
     
     func getOrCreateSession(_ key: String) -> Session {
-        if sessions[key] != nil {
-            return sessions[key]!
+        if let session = sessions[key] {
+            return session
         } else {
             sessions[key] = Session(); return sessions[key]!
         }
