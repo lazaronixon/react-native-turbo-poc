@@ -28,21 +28,18 @@ class TurboView: UIView, SessionDelegate {
     @objc var url: URL!
     @objc var onProposeVisit: RCTBubblingEventBlock!
     
+    private static var sessions: [String: Session] = [:]
+    
     private lazy var session = makeSession()
     
     private var viewController: RNVisitableViewController?
     
     override func didMoveToWindow() {
-        if (window != nil) {
-            session.delegate = self
-        }
-        
         if (window != nil && viewController == nil) {
             initialVisit(url: url)
         }
         
         if (window != nil && viewController != nil) {
-            viewController!.visitableViewWillAppear()
             viewController!.visitableViewDidAppear()
         }
     }
@@ -64,10 +61,18 @@ class TurboView: UIView, SessionDelegate {
     }
     
     private func makeSession() -> Session {
-        let configuration = WKWebViewConfiguration()
-        configuration.applicationNameForUserAgent = "Turbo Native iOS"
-        
-        return SessionManager.shared.getOrCreateSession(sessionKey, configuration)
+        if let session = Self.sessions[sessionKey] {
+            return session
+        } else {
+            let configuration = WKWebViewConfiguration()
+            configuration.applicationNameForUserAgent = "Turbo Native iOS"
+            
+            let session = Session(webViewConfiguration: configuration)
+            session.delegate = self
+            
+            Self.sessions[sessionKey] = session
+            return session
+        }
     }
     
     private func initialVisit(url: URL) {
@@ -101,25 +106,8 @@ class RNVisitableViewController: VisitableViewController {
         // ignore it
     }
     
-    func visitableViewWillAppear() {
-        visitableDelegate?.visitableViewWillAppear(self)
-    }
-    
     func visitableViewDidAppear() {
+        visitableDelegate?.visitableViewWillAppear(self)
         visitableDelegate?.visitableViewDidAppear(self)
-    }
-}
-
-class SessionManager {
-    static let shared = SessionManager();
-    
-    private var sessions: [String: Session] = [:]
-    
-    func getOrCreateSession(_ key: String,_ configuration: WKWebViewConfiguration) -> Session {
-        if let session = sessions[key] {
-            return session
-        } else {
-            sessions[key] = Session(webViewConfiguration: configuration); return sessions[key]!
-        }
     }
 }
