@@ -61,6 +61,8 @@ repositories {
   mavenCentral()
   google()
 
+  maven { url 'https://www.jitpack.io' }
+
   def found = false
   def defaultDir = null
   def androidSourcesName = 'React Native sources'
@@ -132,8 +134,8 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation "dev.hotwire:turbo:7.0.0-rc12"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"  
+  implementation "com.github.lazaronixon:turbo-android:dccd831f6e"
 }
 
 if (isNewArchitectureEnabled()) {
